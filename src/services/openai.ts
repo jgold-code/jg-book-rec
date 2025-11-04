@@ -34,7 +34,7 @@ export async function getBookRecommendations(
           {
             role: 'system',
             content:
-              'You are a knowledgeable book recommender. When given user preferences, recommend 5-6 books that match their interests. For each book, provide detailed information. Format your response as a JSON array with objects containing these fields: "title" (string), "authors" (array of strings), "description" (2-3 sentence summary), "reason" (why you recommend it for their preferences), "publishedDate" (year as string), "pageCount" (approximate number), "categories" (array with 1-2 genre strings), "averageRating" (number 0-5). Only respond with the JSON array, no additional text.',
+              'You are a knowledgeable book recommender. When given user preferences, recommend 8-10 diverse books that match their interests. Include a mix of popular classics and lesser-known gems. For each book, provide detailed information. Format your response as a JSON array with objects containing these fields: "title" (string), "authors" (array of strings), "description" (2-3 sentence summary), "reason" (why you recommend it for their preferences), "publishedDate" (year as string), "pageCount" (approximate number), "categories" (array with 1-2 genre strings), "averageRating" (number 0-5). Only respond with the JSON array, no additional text.',
           },
           {
             role: 'user',
