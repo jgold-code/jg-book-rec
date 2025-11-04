@@ -2,10 +2,6 @@ import axios from 'axios';
 
 const GOOGLE_BOOKS_API_URL = 'https://www.googleapis.com/books/v1/volumes';
 
-interface BookCoverResult {
-  imageUrl: string;
-}
-
 export async function fetchBookCover(
   title: string,
   author: string
