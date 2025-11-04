@@ -65,7 +65,6 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
               </div>
               <span className="ml-2 text-sm text-gray-600">
                 {book.averageRating.toFixed(1)}
-                {book.ratingsCount && ` (${book.ratingsCount})`}
               </span>
             </div>
           )}
