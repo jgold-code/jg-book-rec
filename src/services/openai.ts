@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { fetchMultipleBookCovers } from './bookCovers';
 
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 
@@ -56,18 +57,32 @@ export async function getBookRecommendations(
     try {
       const recommendations = JSON.parse(content);
       if (Array.isArray(recommendations)) {
-        // Add ID and placeholder image for each book
-        return recommendations.map((book, index) => ({
+        // Prepare books data
+        const booksData = recommendations.map((book, index) => ({
           id: `book-${index}-${Date.now()}`,
           title: book.title || 'Unknown Title',
           authors: Array.isArray(book.authors) ? book.authors : [book.authors || book.author || 'Unknown Author'],
           description: book.description || 'A great book worth reading.',
-          imageUrl: generateBookCoverUrl(book.title),
+          imageUrl: '', // Will be fetched
           averageRating: book.averageRating || undefined,
           publishedDate: book.publishedDate || undefined,
           pageCount: book.pageCount || undefined,
           categories: Array.isArray(book.categories) ? book.categories : book.categories ? [book.categories] : undefined,
           reason: book.reason || 'Matches your preferences',
+        }));
+
+        // Fetch real book covers
+        const coverUrls = await fetchMultipleBookCovers(
+          booksData.map(book => ({
+            title: book.title,
+            author: book.authors[0] || 'Unknown'
+          }))
+        );
+
+        // Assign cover URLs to books
+        return booksData.map((book, index) => ({
+          ...book,
+          imageUrl: coverUrls[index] || generateBookCoverUrl(book.title)
         }));
       }
       return [];
