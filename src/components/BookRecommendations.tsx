@@ -4,9 +4,11 @@ import { BookRecommendation } from '../services/openai';
 
 interface BookRecommendationsProps {
   books: BookRecommendation[];
+  onAddToList: (book: BookRecommendation) => void;
+  isInList: (bookId: string) => boolean;
 }
 
-const BookRecommendations: React.FC<BookRecommendationsProps> = ({ books }) => {
+const BookRecommendations: React.FC<BookRecommendationsProps> = ({ books, onAddToList, isInList }) => {
   if (books.length === 0) {
     return null;
   }
@@ -19,7 +21,12 @@ const BookRecommendations: React.FC<BookRecommendationsProps> = ({ books }) => {
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {books.map((book) => (
-          <BookCard key={book.id} book={book} />
+          <BookCard
+            key={book.id}
+            book={book}
+            onAddToList={() => onAddToList(book)}
+            isInList={isInList(book.id)}
+          />
         ))}
       </div>
     </div>

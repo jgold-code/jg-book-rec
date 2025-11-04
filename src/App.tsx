@@ -2,12 +2,15 @@ import { useState } from 'react';
 import PreferenceForm from './components/PreferenceForm';
 import BookRecommendations from './components/BookRecommendations';
 import LoadingSpinner from './components/LoadingSpinner';
+import ReadingList from './components/ReadingList';
 import { getBookRecommendations, BookRecommendation } from './services/openai';
+import { useReadingList } from './hooks/useReadingList';
 
 function App() {
   const [books, setBooks] = useState<BookRecommendation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { readingList, addToReadingList, removeFromReadingList, isInReadingList, clearReadingList } = useReadingList();
 
   const handleGetRecommendations = async (preferences: string) => {
     setIsLoading(true);
@@ -47,7 +50,7 @@ function App() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold text-gray-900 mb-4">
-            📚 Book Recommender
+            📚 ShelfAware
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Discover your next favorite book with AI-powered recommendations
@@ -70,13 +73,26 @@ function App() {
         {isLoading && <LoadingSpinner />}
 
         {/* Book Recommendations */}
-        {!isLoading && books.length > 0 && <BookRecommendations books={books} />}
+        {!isLoading && books.length > 0 && (
+          <BookRecommendations
+            books={books}
+            onAddToList={addToReadingList}
+            isInList={isInReadingList}
+          />
+        )}
 
         {/* Footer */}
         <footer className="text-center mt-16 text-gray-500 text-sm">
           <p>Powered by OpenAI GPT-3.5</p>
         </footer>
       </div>
+
+      {/* Floating Reading List */}
+      <ReadingList
+        books={readingList}
+        onRemove={removeFromReadingList}
+        onClear={clearReadingList}
+      />
     </div>
   );
 }

@@ -3,9 +3,12 @@ import { BookRecommendation } from '../services/openai';
 
 interface BookCardProps {
   book: BookRecommendation;
+  compact?: boolean;
+  onAddToList?: () => void;
+  isInList?: boolean;
 }
 
-const BookCard: React.FC<BookCardProps> = ({ book }) => {
+const BookCard: React.FC<BookCardProps> = ({ book, compact = false, onAddToList, isInList = false }) => {
   const renderStars = (rating?: number) => {
     if (!rating) return null;
     
@@ -38,23 +41,23 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
       <div className="flex flex-col h-full">
-        <div className="flex-shrink-0 bg-gray-100 flex items-center justify-center p-4">
+        <div className={`flex-shrink-0 bg-gray-100 flex items-center justify-center ${compact ? 'p-2' : 'p-4'}`}>
           <img
             src={book.imageUrl}
             alt={book.title}
-            className="h-64 w-auto object-contain"
+            className={`${compact ? 'h-32' : 'h-64'} w-auto object-contain`}
             onError={(e) => {
               e.currentTarget.src = 'https://via.placeholder.com/128x192?text=No+Cover';
             }}
           />
         </div>
         
-        <div className="flex-grow p-5">
-          <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2">
+        <div className={`flex-grow ${compact ? 'p-3' : 'p-5'}`}>
+          <h3 className={`${compact ? 'text-base' : 'text-xl'} font-bold text-gray-900 mb-2 line-clamp-2`}>
             {book.title}
           </h3>
           
-          <p className="text-gray-700 font-medium mb-3">
+          <p className={`text-gray-700 font-medium ${compact ? 'mb-2 text-sm' : 'mb-3'}`}>
             by {book.authors.join(', ')}
           </p>
           
@@ -90,7 +93,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
             </div>
           )}
           
-          <div className="flex items-center justify-between text-xs text-gray-500">
+          <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
             {book.publishedDate && (
               <span>Published: {book.publishedDate.substring(0, 4)}</span>
             )}
@@ -98,6 +101,21 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
               <span>{book.pageCount} pages</span>
             )}
           </div>
+
+          {/* Add to Reading List Button */}
+          {onAddToList && !compact && (
+            <button
+              onClick={onAddToList}
+              disabled={isInList}
+              className={`w-full py-2 px-4 rounded-md font-medium transition-colors ${
+                isInList
+                  ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                  : 'bg-indigo-600 text-white hover:bg-indigo-700'
+              }`}
+            >
+              {isInList ? '✓ Added to List' : '+ Add to Want to Read'}
+            </button>
+          )}
         </div>
       </div>
     </div>
