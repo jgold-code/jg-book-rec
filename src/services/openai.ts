@@ -3,9 +3,16 @@ import axios from 'axios';
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 
 export interface BookRecommendation {
+  id: string;
   title: string;
-  author: string;
-  reason?: string;
+  authors: string[];
+  description: string;
+  imageUrl: string;
+  averageRating?: number;
+  publishedDate?: string;
+  pageCount?: number;
+  categories?: string[];
+  reason: string;
 }
 
 export async function getBookRecommendations(
@@ -26,7 +33,7 @@ export async function getBookRecommendations(
           {
             role: 'system',
             content:
-              'You are a knowledgeable book recommender. When given user preferences, recommend 5-6 books that match their interests. Format your response as a JSON array with objects containing "title", "author", and "reason" fields. Only respond with the JSON array, no additional text.',
+              'You are a knowledgeable book recommender. When given user preferences, recommend 5-6 books that match their interests. For each book, provide detailed information. Format your response as a JSON array with objects containing these fields: "title" (string), "authors" (array of strings), "description" (2-3 sentence summary), "reason" (why you recommend it for their preferences), "publishedDate" (year as string), "pageCount" (approximate number), "categories" (array with 1-2 genre strings), "averageRating" (number 0-5). Only respond with the JSON array, no additional text.',
           },
           {
             role: 'user',
@@ -48,11 +55,25 @@ export async function getBookRecommendations(
     // Parse the JSON response
     try {
       const recommendations = JSON.parse(content);
-      return Array.isArray(recommendations) ? recommendations : [];
+      if (Array.isArray(recommendations)) {
+        // Add ID and placeholder image for each book
+        return recommendations.map((book, index) => ({
+          id: `book-${index}-${Date.now()}`,
+          title: book.title || 'Unknown Title',
+          authors: Array.isArray(book.authors) ? book.authors : [book.authors || book.author || 'Unknown Author'],
+          description: book.description || 'A great book worth reading.',
+          imageUrl: generateBookCoverUrl(book.title),
+          averageRating: book.averageRating || undefined,
+          publishedDate: book.publishedDate || undefined,
+          pageCount: book.pageCount || undefined,
+          categories: Array.isArray(book.categories) ? book.categories : book.categories ? [book.categories] : undefined,
+          reason: book.reason || 'Matches your preferences',
+        }));
+      }
+      return [];
     } catch (parseError) {
-      // If JSON parsing fails, try to extract book info from text
-      console.error('Failed to parse JSON, attempting text extraction', parseError);
-      return extractBooksFromText(content);
+      console.error('Failed to parse JSON response', parseError);
+      throw new Error('Failed to parse AI response. Please try again.');
     }
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -64,22 +85,9 @@ export async function getBookRecommendations(
   }
 }
 
-// Fallback function to extract books from text response
-function extractBooksFromText(text: string): BookRecommendation[] {
-  const books: BookRecommendation[] = [];
-  const lines = text.split('\n');
-  
-  for (const line of lines) {
-    // Try to match patterns like "Title by Author" or "Title - Author"
-    const match = line.match(/["']?([^"']+)["']?\s+(?:by|-)\s+([^,\n]+)/i);
-    if (match) {
-      books.push({
-        title: match[1].trim(),
-        author: match[2].trim(),
-      });
-    }
-  }
-  
-  return books;
+// Generate a placeholder book cover with the title
+function generateBookCoverUrl(title: string): string {
+  const encodedTitle = encodeURIComponent(title.substring(0, 50));
+  return `https://via.placeholder.com/200x300/4F46E5/FFFFFF?text=${encodedTitle}`;
 }
 

@@ -1,9 +1,9 @@
 import React from 'react';
 import BookCard from './BookCard';
-import { BookDetails } from '../services/googleBooks';
+import { BookRecommendation } from '../services/openai';
 
 interface BookRecommendationsProps {
-  books: BookDetails[];
+  books: BookRecommendation[];
 }
 
 const BookRecommendations: React.FC<BookRecommendationsProps> = ({ books }) => {

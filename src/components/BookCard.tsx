@@ -1,8 +1,8 @@
 import React from 'react';
-import { BookDetails } from '../services/googleBooks';
+import { BookRecommendation } from '../services/openai';
 
 interface BookCardProps {
-  book: BookDetails;
+  book: BookRecommendation;
 }
 
 const BookCard: React.FC<BookCardProps> = ({ book }) => {
@@ -78,11 +78,20 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
             </div>
           )}
           
-          <p className="text-gray-600 text-sm mb-4 line-clamp-4">
+          <p className="text-gray-600 text-sm mb-3 line-clamp-3">
             {book.description.replace(/<[^>]*>/g, '')}
           </p>
           
-          <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+          {book.reason && (
+            <div className="bg-indigo-50 border-l-4 border-indigo-400 p-3 mb-3">
+              <p className="text-sm text-indigo-900">
+                <span className="font-semibold">Why this book: </span>
+                {book.reason}
+              </p>
+            </div>
+          )}
+          
+          <div className="flex items-center justify-between text-xs text-gray-500">
             {book.publishedDate && (
               <span>Published: {book.publishedDate.substring(0, 4)}</span>
             )}
@@ -90,17 +99,6 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
               <span>{book.pageCount} pages</span>
             )}
           </div>
-          
-          {book.previewLink && (
-            <a
-              href={book.previewLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full text-center bg-indigo-50 text-indigo-600 py-2 px-4 rounded-md hover:bg-indigo-100 transition-colors font-medium"
-            >
-              Preview on Google Books
-            </a>
-          )}
         </div>
       </div>
     </div>

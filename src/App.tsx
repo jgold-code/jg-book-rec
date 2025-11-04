@@ -2,11 +2,10 @@ import { useState } from 'react';
 import PreferenceForm from './components/PreferenceForm';
 import BookRecommendations from './components/BookRecommendations';
 import LoadingSpinner from './components/LoadingSpinner';
-import { getBookRecommendations } from './services/openai';
-import { searchMultipleBooks, BookDetails } from './services/googleBooks';
+import { getBookRecommendations, BookRecommendation } from './services/openai';
 
 function App() {
-  const [books, setBooks] = useState<BookDetails[]>([]);
+  const [books, setBooks] = useState<BookRecommendation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -16,7 +15,7 @@ function App() {
     setBooks([]);
 
     try {
-      // Step 1: Get recommendations from OpenAI
+      // Get recommendations from OpenAI with full book details
       const recommendations = await getBookRecommendations(preferences);
       
       if (recommendations.length === 0) {
@@ -24,15 +23,7 @@ function App() {
         return;
       }
 
-      // Step 2: Fetch book details from Google Books
-      const bookDetails = await searchMultipleBooks(recommendations);
-      
-      if (bookDetails.length === 0) {
-        setError('Could not find book details. Please try again.');
-        return;
-      }
-
-      setBooks(bookDetails);
+      setBooks(recommendations);
     } catch (err) {
       console.error('Error getting recommendations:', err);
       
@@ -83,7 +74,7 @@ function App() {
 
         {/* Footer */}
         <footer className="text-center mt-16 text-gray-500 text-sm">
-          <p>Powered by OpenAI and Google Books API</p>
+          <p>Powered by OpenAI GPT-3.5</p>
         </footer>
       </div>
     </div>

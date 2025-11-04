@@ -22,36 +22,64 @@ export async function searchBook(
 ): Promise<BookDetails | null> {
   const apiKey = import.meta.env.VITE_GOOGLE_BOOKS_API_KEY;
   
+  // Clean up title and author - remove special characters that might break search
+  const cleanTitle = title.replace(/[^\w\s]/g, '').trim();
+  const cleanAuthor = author.replace(/[^\w\s]/g, '').trim();
+  
   try {
-    // Search for the book using title and author
-    const query = `intitle:${title}+inauthor:${author}`;
-    const url = apiKey 
-      ? `${GOOGLE_BOOKS_API_URL}?q=${encodeURIComponent(query)}&key=${apiKey}&maxResults=1`
-      : `${GOOGLE_BOOKS_API_URL}?q=${encodeURIComponent(query)}&maxResults=1`;
+    // Strategy 1: Search with title and author combined
+    const combinedQuery = `${cleanTitle} ${cleanAuthor}`;
+    const url1 = apiKey 
+      ? `${GOOGLE_BOOKS_API_URL}?q=${encodeURIComponent(combinedQuery)}&key=${apiKey}&maxResults=3`
+      : `${GOOGLE_BOOKS_API_URL}?q=${encodeURIComponent(combinedQuery)}&maxResults=3`;
 
-    const response = await axios.get(url);
+    console.log('Searching for:', combinedQuery);
+    const response1 = await axios.get(url1);
 
-    if (response.data.items && response.data.items.length > 0) {
-      const book = response.data.items[0];
+    if (response1.data.items && response1.data.items.length > 0) {
+      const book = response1.data.items[0];
+      console.log('Found book:', book.volumeInfo.title);
       return formatBookDetails(book);
     }
 
-    // If no results with both title and author, try just title
-    const titleOnlyQuery = `intitle:${title}`;
-    const titleOnlyUrl = apiKey
-      ? `${GOOGLE_BOOKS_API_URL}?q=${encodeURIComponent(titleOnlyQuery)}&key=${apiKey}&maxResults=1`
-      : `${GOOGLE_BOOKS_API_URL}?q=${encodeURIComponent(titleOnlyQuery)}&maxResults=1`;
+    // Strategy 2: Try with intitle syntax
+    const query2 = `intitle:${cleanTitle}`;
+    const url2 = apiKey
+      ? `${GOOGLE_BOOKS_API_URL}?q=${encodeURIComponent(query2)}&key=${apiKey}&maxResults=3`
+      : `${GOOGLE_BOOKS_API_URL}?q=${encodeURIComponent(query2)}&maxResults=3`;
     
-    const titleResponse = await axios.get(titleOnlyUrl);
+    console.log('Trying title only:', query2);
+    const response2 = await axios.get(url2);
     
-    if (titleResponse.data.items && titleResponse.data.items.length > 0) {
-      const book = titleResponse.data.items[0];
+    if (response2.data.items && response2.data.items.length > 0) {
+      const book = response2.data.items[0];
+      console.log('Found book:', book.volumeInfo.title);
       return formatBookDetails(book);
     }
 
+    // Strategy 3: Try just the first few words of the title
+    const shortTitle = cleanTitle.split(' ').slice(0, 3).join(' ');
+    const query3 = `${shortTitle}`;
+    const url3 = apiKey
+      ? `${GOOGLE_BOOKS_API_URL}?q=${encodeURIComponent(query3)}&key=${apiKey}&maxResults=3`
+      : `${GOOGLE_BOOKS_API_URL}?q=${encodeURIComponent(query3)}&maxResults=3`;
+    
+    console.log('Trying short title:', query3);
+    const response3 = await axios.get(url3);
+    
+    if (response3.data.items && response3.data.items.length > 0) {
+      const book = response3.data.items[0];
+      console.log('Found book:', book.volumeInfo.title);
+      return formatBookDetails(book);
+    }
+
+    console.warn('No results found for:', title, 'by', author);
     return null;
   } catch (error) {
     console.error('Error fetching book from Google Books:', error);
+    if (axios.isAxiosError(error)) {
+      console.error('Response:', error.response?.data);
+    }
     return null;
   }
 }

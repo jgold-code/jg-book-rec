@@ -5,9 +5,8 @@ An AI-powered book recommendation web app that helps you discover your next favo
 ## Features
 
 - **AI-Powered Recommendations**: Uses OpenAI's GPT to understand your preferences and suggest relevant books
-- **Rich Book Information**: Fetches detailed book data from Google Books API including covers, descriptions, ratings, and more
+- **Complete Book Details**: AI provides comprehensive information including descriptions, ratings, genres, and personalized reasons for each recommendation
 - **Beautiful UI**: Modern, responsive design built with React and Tailwind CSS
-- **Smart Search**: Automatically finds books matching AI recommendations
 - **Example Prompts**: Quick-start examples to help you get started
 
 ## Tech Stack
@@ -15,16 +14,13 @@ An AI-powered book recommendation web app that helps you discover your next favo
 - **Frontend**: React 18 with TypeScript
 - **Build Tool**: Vite
 - **Styling**: Tailwind CSS
-- **APIs**: 
-  - OpenAI API (GPT-3.5-turbo)
-  - Google Books API
+- **API**: OpenAI API (GPT-3.5-turbo)
 - **HTTP Client**: Axios
 
 ## Prerequisites
 
 - Node.js 18+ and npm
 - OpenAI API key
-- Google Books API key (optional but recommended)
 
 ## Getting Started
 
@@ -40,25 +36,15 @@ Create a `.env` file in the root directory:
 
 ```env
 VITE_OPENAI_API_KEY=your_openai_api_key_here
-VITE_GOOGLE_BOOKS_API_KEY=your_google_books_api_key_here
 ```
 
-#### Getting API Keys
+#### Getting Your OpenAI API Key
 
-**OpenAI API Key:**
-1. Go to [OpenAI Platform](https://platform.openai.com/)
+1. Go to [OpenAI Platform](https://platform.openai.com/api-keys)
 2. Sign up or log in
 3. Navigate to API Keys section
 4. Create a new API key
-
-**Google Books API Key:**
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select an existing one
-3. Enable the Google Books API
-4. Create credentials (API Key)
-5. Copy the API key
-
-*Note: The Google Books API key is optional. The app will work without it but may have lower rate limits.*
+5. Copy the key (starts with `sk-`)
 
 ### 3. Run the Development Server
 
@@ -87,12 +73,11 @@ The production build will be in the `dist` directory.
 
 2. **Get Recommendations**: Click the "Get Recommendations" button
 
-3. **Explore Results**: Browse through the recommended books with:
-   - Book covers
-   - Author information
-   - Ratings and reviews
-   - Descriptions
-   - Preview links
+3. **Explore Results**: Browse through the AI-generated recommendations with:
+   - Book details and author information
+   - Ratings and estimated page counts
+   - Personalized descriptions
+   - Why each book was recommended for you
 
 ## Example Prompts
 
@@ -114,8 +99,7 @@ book-recommender/
 │   │   ├── LoadingSpinner.tsx   # Loading state
 │   │   └── PreferenceForm.tsx   # User input form
 │   ├── services/
-│   │   ├── openai.ts            # OpenAI API integration
-│   │   └── googleBooks.ts       # Google Books API integration
+│   │   └── openai.ts            # OpenAI API integration
 │   ├── main.tsx                 # App entry point
 │   ├── index.css                # Global styles
 │   └── vite-env.d.ts           # TypeScript definitions
@@ -137,7 +121,6 @@ book-recommender/
 ## API Rate Limits
 
 - **OpenAI**: Depends on your plan (usually sufficient for personal use)
-- **Google Books**: 1000 requests per day for free tier (higher with API key)
 
 ## Troubleshooting
 
@@ -153,12 +136,7 @@ If you see "OpenAI API key is not configured":
 - Try being more specific with your preferences
 - Check your internet connection
 - Verify your OpenAI API key has available credits
-
-### Books Not Loading
-
-- Check if Google Books API is accessible in your region
-- Verify your Google Books API key (if using one)
-- Some books may not have complete information
+- Check the browser console for detailed error messages
 
 ## License
 
@@ -167,6 +145,5 @@ Copyright Anysphere Inc.
 ## Acknowledgments
 
 - Powered by OpenAI's GPT-3.5-turbo
-- Book data from Google Books API
 - Built with React, TypeScript, and Tailwind CSS
 
