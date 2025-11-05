@@ -94,7 +94,7 @@ const BookCard: React.FC<BookCardProps> = ({ book, compact = false, onAddToList,
             </div>
           )}
           
-          <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
+          <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
             {book.publishedDate && (
               <span>Published: {book.publishedDate.substring(0, 4)}</span>
             )}
@@ -103,78 +103,82 @@ const BookCard: React.FC<BookCardProps> = ({ book, compact = false, onAddToList,
             )}
           </div>
 
-          {/* Buy/Find Options */}
+          {/* All Buttons Section */}
           {!compact && (
-            <div className="space-y-2">
-              <div className="grid grid-cols-2 gap-2">
-                <a
-                  href={`https://www.amazon.com/s?k=${encodeURIComponent(book.title + ' ' + book.authors[0])}&i=stripbooks`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-1 bg-orange-500 text-white py-2 px-3 rounded-md hover:bg-orange-600 transition-colors text-sm font-medium"
-                >
-                  <span>📦</span>
-                  <span>Amazon</span>
-                </a>
-                <a
-                  href={`https://www.amazon.com/s?k=${encodeURIComponent(book.title + ' ' + book.authors[0])}&i=digital-text`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-1 bg-blue-600 text-white py-2 px-3 rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
-                >
-                  <span>📱</span>
-                  <span>Kindle</span>
-                </a>
+            <div className="space-y-3">
+              {/* Buy/Find Options */}
+              <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <a
+                    href={`https://www.amazon.com/s?k=${encodeURIComponent(book.title + ' ' + book.authors[0])}&i=stripbooks`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-1 bg-orange-500 text-white py-2 px-3 rounded-md hover:bg-orange-600 transition-colors text-sm font-medium"
+                  >
+                    <span>📦</span>
+                    <span>Amazon</span>
+                  </a>
+                  <a
+                    href={`https://www.amazon.com/s?k=${encodeURIComponent(book.title + ' ' + book.authors[0])}&i=digital-text`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-1 bg-blue-600 text-white py-2 px-3 rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
+                  >
+                    <span>📱</span>
+                    <span>Kindle</span>
+                  </a>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <a
+                    href={`https://www.goodreads.com/search?q=${encodeURIComponent(book.title + ' ' + book.authors[0])}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-1 bg-amber-600 text-white py-2 px-3 rounded-md hover:bg-amber-700 transition-colors text-sm font-medium"
+                  >
+                    <span>⭐</span>
+                    <span>Goodreads</span>
+                  </a>
+                  <a
+                    href={`https://www.worldcat.org/search?q=${encodeURIComponent(book.title + ' ' + book.authors[0])}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-1 bg-teal-600 text-white py-2 px-3 rounded-md hover:bg-teal-700 transition-colors text-sm font-medium"
+                  >
+                    <span>📚</span>
+                    <span>Library</span>
+                  </a>
+                </div>
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                <a
-                  href={`https://www.goodreads.com/search?q=${encodeURIComponent(book.title + ' ' + book.authors[0])}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-1 bg-amber-600 text-white py-2 px-3 rounded-md hover:bg-amber-700 transition-colors text-sm font-medium"
-                >
-                  <span>⭐</span>
-                  <span>Goodreads</span>
-                </a>
-                <a
-                  href={`https://www.worldcat.org/search?q=${encodeURIComponent(book.title + ' ' + book.authors[0])}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-1 bg-teal-600 text-white py-2 px-3 rounded-md hover:bg-teal-700 transition-colors text-sm font-medium"
-                >
-                  <span>📚</span>
-                  <span>Library</span>
-                </a>
-              </div>
-            </div>
-          )}
 
-          {/* Action Buttons */}
-          {!compact && (
-            <div className="space-y-2">
-              {onAddToList && (
-                <button
-                  onClick={onAddToList}
-                  disabled={isInList}
-                  className={`w-full py-2 px-4 rounded-md font-medium transition-colors ${
-                    isInList
-                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                      : 'bg-indigo-600 text-white hover:bg-indigo-700'
-                  }`}
-                >
-                  {isInList ? '✓ Added to List' : '+ Add to Want to Read'}
-                </button>
-              )}
-              
-              {onMoreLikeThis && (
-                <button
-                  onClick={onMoreLikeThis}
-                  className="w-full py-2 px-4 rounded-md font-medium bg-purple-600 text-white hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
-                >
-                  <span>✨</span>
-                  <span>More Like This</span>
-                </button>
-              )}
+              {/* Divider */}
+              <div className="border-t border-gray-200"></div>
+
+              {/* Action Buttons */}
+              <div className="space-y-2">
+                {onAddToList && (
+                  <button
+                    onClick={onAddToList}
+                    disabled={isInList}
+                    className={`w-full py-2 px-4 rounded-md font-medium transition-colors ${
+                      isInList
+                        ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                        : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                    }`}
+                  >
+                    {isInList ? '✓ Added to List' : '+ Add to Want to Read'}
+                  </button>
+                )}
+                
+                {onMoreLikeThis && (
+                  <button
+                    onClick={onMoreLikeThis}
+                    className="w-full py-2 px-4 rounded-md font-medium bg-purple-600 text-white hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <span>✨</span>
+                    <span>More Like This</span>
+                  </button>
+                )}
+              </div>
             </div>
           )}
         </div>
