@@ -6,8 +6,10 @@ An AI-powered book recommendation web app that helps you discover your next favo
 
 - **AI-Powered Recommendations**: Uses OpenAI's GPT to understand your preferences and suggest relevant books
 - **Real Book Covers**: Automatically fetches actual book cover images from Google Books
+- **Buy/Find Links**: Direct links to Amazon, Kindle, Goodreads, and WorldCat library search
 - **Want to Read List**: Save books to your personal reading list with persistent localStorage
 - **Complete Book Details**: AI provides comprehensive information including descriptions, ratings, genres, and personalized reasons for each recommendation
+- **Refresh Recommendations**: Get more book suggestions with a single click
 - **Beautiful UI**: Modern, responsive design built with React and Tailwind CSS
 - **Example Prompts**: Quick-start examples to help you get started
 
