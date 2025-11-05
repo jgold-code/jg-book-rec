@@ -6,9 +6,10 @@ interface BookRecommendationsProps {
   books: BookRecommendation[];
   onAddToList: (book: BookRecommendation) => void;
   isInList: (bookId: string) => boolean;
+  onMoreLikeThis: (book: BookRecommendation) => void;
 }
 
-const BookRecommendations: React.FC<BookRecommendationsProps> = ({ books, onAddToList, isInList }) => {
+const BookRecommendations: React.FC<BookRecommendationsProps> = ({ books, onAddToList, isInList, onMoreLikeThis }) => {
   if (books.length === 0) {
     return null;
   }
@@ -22,6 +23,7 @@ const BookRecommendations: React.FC<BookRecommendationsProps> = ({ books, onAddT
             book={book}
             onAddToList={() => onAddToList(book)}
             isInList={isInList(book.id)}
+            onMoreLikeThis={() => onMoreLikeThis(book)}
           />
         ))}
       </div>

@@ -11,7 +11,18 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastPreferences, setLastPreferences] = useState<string>('');
-  const { readingList, addToReadingList, removeFromReadingList, isInReadingList, clearReadingList } = useReadingList();
+  const {
+    wantToRead,
+    alreadyRead,
+    addToWantToRead,
+    removeFromWantToRead,
+    removeFromAlreadyRead,
+    moveToAlreadyRead,
+    moveToWantToRead,
+    isInAnyList,
+    clearWantToRead,
+    clearAlreadyRead,
+  } = useReadingList();
 
   const handleGetRecommendations = async (preferences: string) => {
     setIsLoading(true);
@@ -50,6 +61,16 @@ function App() {
     if (lastPreferences) {
       handleGetRecommendations(lastPreferences);
     }
+  };
+
+  const handleMoreLikeThis = (book: BookRecommendation) => {
+    const moreLikePrompt = `I loved "${book.title}" by ${book.authors.join(', ')}. ${
+      book.categories && book.categories.length > 0 
+        ? `It's ${book.categories.join(', ')}.` 
+        : ''
+    } Recommend me books with similar themes, writing style, or atmosphere.`;
+    
+    handleGetRecommendations(moreLikePrompt);
   };
 
   return (
@@ -105,8 +126,9 @@ function App() {
             </div>
             <BookRecommendations
               books={books}
-              onAddToList={addToReadingList}
-              isInList={isInReadingList}
+              onAddToList={addToWantToRead}
+              isInList={isInAnyList}
+              onMoreLikeThis={handleMoreLikeThis}
             />
           </>
         )}
@@ -119,9 +141,14 @@ function App() {
 
       {/* Floating Reading List */}
       <ReadingList
-        books={readingList}
-        onRemove={removeFromReadingList}
-        onClear={clearReadingList}
+        wantToRead={wantToRead}
+        alreadyRead={alreadyRead}
+        onRemoveWant={removeFromWantToRead}
+        onRemoveRead={removeFromAlreadyRead}
+        onMoveToRead={moveToAlreadyRead}
+        onMoveToWant={moveToWantToRead}
+        onClearWant={clearWantToRead}
+        onClearRead={clearAlreadyRead}
       />
     </div>
   );

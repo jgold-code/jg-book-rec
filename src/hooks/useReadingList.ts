@@ -1,61 +1,125 @@
 import { useState, useEffect } from 'react';
 import { BookRecommendation } from '../services/openai';
 
-const STORAGE_KEY = 'shelfaware-reading-list';
+const WANT_TO_READ_KEY = 'shelfaware-want-to-read';
+const ALREADY_READ_KEY = 'shelfaware-already-read';
 
 export function useReadingList() {
-  const [readingList, setReadingList] = useState<BookRecommendation[]>([]);
+  const [wantToRead, setWantToRead] = useState<BookRecommendation[]>([]);
+  const [alreadyRead, setAlreadyRead] = useState<BookRecommendation[]>([]);
 
-  // Load reading list from localStorage on mount
+  // Load lists from localStorage on mount
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setReadingList(parsed);
+      const wantStored = localStorage.getItem(WANT_TO_READ_KEY);
+      const readStored = localStorage.getItem(ALREADY_READ_KEY);
+      
+      if (wantStored) {
+        setWantToRead(JSON.parse(wantStored));
+      }
+      if (readStored) {
+        setAlreadyRead(JSON.parse(readStored));
       }
     } catch (error) {
-      console.error('Error loading reading list:', error);
+      console.error('Error loading reading lists:', error);
     }
   }, []);
 
-  // Save to localStorage whenever reading list changes
+  // Save lists to localStorage whenever they change
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(readingList));
+      localStorage.setItem(WANT_TO_READ_KEY, JSON.stringify(wantToRead));
     } catch (error) {
-      console.error('Error saving reading list:', error);
+      console.error('Error saving want to read list:', error);
     }
-  }, [readingList]);
+  }, [wantToRead]);
 
-  const addToReadingList = (book: BookRecommendation) => {
-    setReadingList((prev) => {
-      // Check if book is already in the list
+  useEffect(() => {
+    try {
+      localStorage.setItem(ALREADY_READ_KEY, JSON.stringify(alreadyRead));
+    } catch (error) {
+      console.error('Error saving already read list:', error);
+    }
+  }, [alreadyRead]);
+
+  const addToWantToRead = (book: BookRecommendation) => {
+    setWantToRead((prev) => {
       if (prev.some((b) => b.id === book.id)) {
         return prev;
       }
       return [...prev, book];
     });
+    // Remove from already read if it's there
+    setAlreadyRead((prev) => prev.filter((b) => b.id !== book.id));
   };
 
-  const removeFromReadingList = (bookId: string) => {
-    setReadingList((prev) => prev.filter((b) => b.id !== bookId));
+  const addToAlreadyRead = (book: BookRecommendation) => {
+    setAlreadyRead((prev) => {
+      if (prev.some((b) => b.id === book.id)) {
+        return prev;
+      }
+      return [...prev, book];
+    });
+    // Remove from want to read if it's there
+    setWantToRead((prev) => prev.filter((b) => b.id !== book.id));
   };
 
-  const isInReadingList = (bookId: string) => {
-    return readingList.some((b) => b.id === bookId);
+  const removeFromWantToRead = (bookId: string) => {
+    setWantToRead((prev) => prev.filter((b) => b.id !== bookId));
   };
 
-  const clearReadingList = () => {
-    setReadingList([]);
+  const removeFromAlreadyRead = (bookId: string) => {
+    setAlreadyRead((prev) => prev.filter((b) => b.id !== bookId));
+  };
+
+  const moveToAlreadyRead = (bookId: string) => {
+    const book = wantToRead.find((b) => b.id === bookId);
+    if (book) {
+      addToAlreadyRead(book);
+    }
+  };
+
+  const moveToWantToRead = (bookId: string) => {
+    const book = alreadyRead.find((b) => b.id === bookId);
+    if (book) {
+      addToWantToRead(book);
+    }
+  };
+
+  const isInWantToRead = (bookId: string) => {
+    return wantToRead.some((b) => b.id === bookId);
+  };
+
+  const isInAlreadyRead = (bookId: string) => {
+    return alreadyRead.some((b) => b.id === bookId);
+  };
+
+  const isInAnyList = (bookId: string) => {
+    return isInWantToRead(bookId) || isInAlreadyRead(bookId);
+  };
+
+  const clearWantToRead = () => {
+    setWantToRead([]);
+  };
+
+  const clearAlreadyRead = () => {
+    setAlreadyRead([]);
   };
 
   return {
-    readingList,
-    addToReadingList,
-    removeFromReadingList,
-    isInReadingList,
-    clearReadingList,
+    wantToRead,
+    alreadyRead,
+    addToWantToRead,
+    addToAlreadyRead,
+    removeFromWantToRead,
+    removeFromAlreadyRead,
+    moveToAlreadyRead,
+    moveToWantToRead,
+    isInWantToRead,
+    isInAlreadyRead,
+    isInAnyList,
+    clearWantToRead,
+    clearAlreadyRead,
   };
 }
 

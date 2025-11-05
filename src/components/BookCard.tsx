@@ -6,9 +6,10 @@ interface BookCardProps {
   compact?: boolean;
   onAddToList?: () => void;
   isInList?: boolean;
+  onMoreLikeThis?: () => void;
 }
 
-const BookCard: React.FC<BookCardProps> = ({ book, compact = false, onAddToList, isInList = false }) => {
+const BookCard: React.FC<BookCardProps> = ({ book, compact = false, onAddToList, isInList = false, onMoreLikeThis }) => {
   const renderStars = (rating?: number) => {
     if (!rating) return null;
     
@@ -148,19 +149,33 @@ const BookCard: React.FC<BookCardProps> = ({ book, compact = false, onAddToList,
             </div>
           )}
 
-          {/* Add to Reading List Button */}
-          {onAddToList && !compact && (
-            <button
-              onClick={onAddToList}
-              disabled={isInList}
-              className={`w-full mt-2 py-2 px-4 rounded-md font-medium transition-colors ${
-                isInList
-                  ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                  : 'bg-indigo-600 text-white hover:bg-indigo-700'
-              }`}
-            >
-              {isInList ? '✓ Added to List' : '+ Add to Want to Read'}
-            </button>
+          {/* Action Buttons */}
+          {!compact && (
+            <div className="space-y-2">
+              {onAddToList && (
+                <button
+                  onClick={onAddToList}
+                  disabled={isInList}
+                  className={`w-full py-2 px-4 rounded-md font-medium transition-colors ${
+                    isInList
+                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                      : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                  }`}
+                >
+                  {isInList ? '✓ Added to List' : '+ Add to Want to Read'}
+                </button>
+              )}
+              
+              {onMoreLikeThis && (
+                <button
+                  onClick={onMoreLikeThis}
+                  className="w-full py-2 px-4 rounded-md font-medium bg-purple-600 text-white hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
+                >
+                  <span>✨</span>
+                  <span>More Like This</span>
+                </button>
+              )}
+            </div>
           )}
         </div>
       </div>
