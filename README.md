@@ -16,7 +16,7 @@ An AI-powered book recommendation web app that helps you discover your next favo
 - **Frontend**: React 18 with TypeScript
 - **Build Tool**: Vite
 - **Styling**: Tailwind CSS
-- **API**: OpenAI API (GPT-3.5-turbo)
+- **API**: OpenAI API (GPT-4o)
 - **HTTP Client**: Axios
 
 ## Prerequisites
@@ -146,6 +146,6 @@ Copyright Anysphere Inc.
 
 ## Acknowledgments
 
-- Powered by OpenAI's GPT-3.5-turbo
+- Powered by OpenAI's GPT-4o (latest model)
 - Built with React, TypeScript, and Tailwind CSS
 

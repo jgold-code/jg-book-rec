@@ -113,7 +113,7 @@ function App() {
 
         {/* Footer */}
         <footer className="text-center mt-16 text-gray-500 text-sm">
-          <p>Powered by OpenAI GPT-3.5</p>
+          <p>Powered by OpenAI GPT-4o</p>
         </footer>
       </div>
 

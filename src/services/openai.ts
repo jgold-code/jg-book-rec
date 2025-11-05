@@ -29,7 +29,7 @@ export async function getBookRecommendations(
     const response = await axios.post(
       OPENAI_API_URL,
       {
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'system',
