@@ -102,12 +102,58 @@ const BookCard: React.FC<BookCardProps> = ({ book, compact = false, onAddToList,
             )}
           </div>
 
+          {/* Buy/Find Options */}
+          {!compact && (
+            <div className="space-y-2">
+              <div className="grid grid-cols-2 gap-2">
+                <a
+                  href={`https://www.amazon.com/s?k=${encodeURIComponent(book.title + ' ' + book.authors[0])}&i=stripbooks`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-1 bg-orange-500 text-white py-2 px-3 rounded-md hover:bg-orange-600 transition-colors text-sm font-medium"
+                >
+                  <span>📦</span>
+                  <span>Amazon</span>
+                </a>
+                <a
+                  href={`https://www.amazon.com/s?k=${encodeURIComponent(book.title + ' ' + book.authors[0])}&i=digital-text`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-1 bg-blue-600 text-white py-2 px-3 rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
+                >
+                  <span>📱</span>
+                  <span>Kindle</span>
+                </a>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <a
+                  href={`https://www.goodreads.com/search?q=${encodeURIComponent(book.title + ' ' + book.authors[0])}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-1 bg-amber-600 text-white py-2 px-3 rounded-md hover:bg-amber-700 transition-colors text-sm font-medium"
+                >
+                  <span>⭐</span>
+                  <span>Goodreads</span>
+                </a>
+                <a
+                  href={`https://www.worldcat.org/search?q=${encodeURIComponent(book.title + ' ' + book.authors[0])}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-1 bg-teal-600 text-white py-2 px-3 rounded-md hover:bg-teal-700 transition-colors text-sm font-medium"
+                >
+                  <span>📚</span>
+                  <span>Library</span>
+                </a>
+              </div>
+            </div>
+          )}
+
           {/* Add to Reading List Button */}
           {onAddToList && !compact && (
             <button
               onClick={onAddToList}
               disabled={isInList}
-              className={`w-full py-2 px-4 rounded-md font-medium transition-colors ${
+              className={`w-full mt-2 py-2 px-4 rounded-md font-medium transition-colors ${
                 isInList
                   ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                   : 'bg-indigo-600 text-white hover:bg-indigo-700'
