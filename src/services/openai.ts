@@ -55,8 +55,20 @@ export async function getBookRecommendations(
     
     // Parse the JSON response
     try {
-      const recommendations = JSON.parse(content);
-      if (Array.isArray(recommendations)) {
+      // GPT-4 sometimes wraps JSON in markdown code blocks, so we need to extract it
+      let jsonContent = content.trim();
+      
+      // Remove markdown code block formatting if present
+      if (jsonContent.startsWith('```json')) {
+        jsonContent = jsonContent.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+      } else if (jsonContent.startsWith('```')) {
+        jsonContent = jsonContent.replace(/^```\s*/, '').replace(/\s*```$/, '');
+      }
+      
+      // Try to parse the JSON
+      const recommendations = JSON.parse(jsonContent);
+      
+      if (Array.isArray(recommendations) && recommendations.length > 0) {
         // Prepare books data
         const booksData = recommendations.map((book, index) => ({
           id: `book-${index}-${Date.now()}`,
@@ -85,9 +97,12 @@ export async function getBookRecommendations(
           imageUrl: coverUrls[index] || generateBookCoverUrl(book.title)
         }));
       }
-      return [];
+      
+      console.error('No valid recommendations in response');
+      throw new Error('No recommendations found in response.');
     } catch (parseError) {
       console.error('Failed to parse JSON response', parseError);
+      console.error('Raw content:', content);
       throw new Error('Failed to parse AI response. Please try again.');
     }
   } catch (error) {
