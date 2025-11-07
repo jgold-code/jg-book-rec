@@ -10,6 +10,7 @@ function App() {
   const [books, setBooks] = useState<BookRecommendation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isReplacingBook, setIsReplacingBook] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastPreferences, setLastPreferences] = useState<string>('');
   
@@ -94,20 +95,37 @@ function App() {
     // Add to already read list
     addToAlreadyRead(book);
     
-    // Remove from display
+    // Remove from display immediately
     setBooks(prev => prev.filter(b => b.id !== book.id));
     
-    // Fetch a replacement book
+    // Fetch replacement books
     if (lastPreferences) {
+      setIsReplacingBook(true);
       try {
         const recommendations = await getBookRecommendations(lastPreferences);
+        
         if (recommendations.length > 0) {
-          // Add just the first new book as a replacement
-          setBooks(prev => [...prev, recommendations[0]]);
+          // Get titles from current display, want to read, and already read lists
+          const allReadTitles = new Set([
+            ...books.map(b => b.title.toLowerCase()),
+            ...wantToRead.map(b => b.title.toLowerCase()),
+            ...alreadyRead.map(b => b.title.toLowerCase())
+          ]);
+          
+          // Find a book that's completely new
+          const newBook = recommendations.find(
+            rec => !allReadTitles.has(rec.title.toLowerCase())
+          );
+          
+          if (newBook) {
+            setBooks(prev => [...prev, newBook]);
+          }
         }
       } catch (err) {
         console.error('Error fetching replacement book:', err);
         // Silent fail - don't show error for replacement
+      } finally {
+        setIsReplacingBook(false);
       }
     }
   };
@@ -151,6 +169,15 @@ function App() {
                 <span className="bg-indigo-100 text-indigo-800 text-sm font-semibold px-3 py-1 rounded-full">
                   {books.length} books
                 </span>
+                {isReplacingBook && (
+                  <span className="text-sm text-gray-600 flex items-center gap-2">
+                    <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Finding replacement...
+                  </span>
+                )}
               </div>
               <button
                 onClick={handleGetMoreBooks}
