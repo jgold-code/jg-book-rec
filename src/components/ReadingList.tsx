@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { BookRecommendation } from '../services/openai';
-import BookCard from './BookCard';
 
 interface ReadingListProps {
   wantToRead: BookRecommendation[];
