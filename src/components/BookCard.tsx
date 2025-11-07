@@ -109,6 +109,39 @@ const BookCard: React.FC<BookCardProps> = ({
             )}
           </div>
 
+          {/* Buy/Find Links */}
+          <div className="mb-3">
+            <div className="grid grid-cols-3 gap-2">
+              <a
+                href={`https://www.amazon.com/s?k=${encodeURIComponent(book.title + ' ' + book.authors[0])}&i=stripbooks`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-1 bg-orange-500 text-white py-2 px-2 rounded-md hover:bg-orange-600 transition-colors text-xs font-medium"
+              >
+                <span>📦</span>
+                <span>Amazon</span>
+              </a>
+              <a
+                href={`https://www.amazon.com/s?k=${encodeURIComponent(book.title + ' ' + book.authors[0])}&i=digital-text`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-1 bg-blue-600 text-white py-2 px-2 rounded-md hover:bg-blue-700 transition-colors text-xs font-medium"
+              >
+                <span>📱</span>
+                <span>Kindle</span>
+              </a>
+              <a
+                href={`https://www.goodreads.com/search?q=${encodeURIComponent(book.title + ' ' + book.authors[0])}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-1 bg-amber-600 text-white py-2 px-2 rounded-md hover:bg-amber-700 transition-colors text-xs font-medium"
+              >
+                <span>⭐</span>
+                <span>Goodreads</span>
+              </a>
+            </div>
+          </div>
+
           {/* Action Buttons */}
           {(onAddToWantToRead || onAddToAlreadyRead) && (
             <div className="space-y-2">
