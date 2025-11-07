@@ -3,9 +3,19 @@ import { BookRecommendation } from '../services/openai';
 
 interface BookCardProps {
   book: BookRecommendation;
+  onAddToWantToRead?: () => void;
+  onAddToAlreadyRead?: () => void;
+  isInWantToRead?: boolean;
+  isInAlreadyRead?: boolean;
 }
 
-const BookCard: React.FC<BookCardProps> = ({ book }) => {
+const BookCard: React.FC<BookCardProps> = ({ 
+  book, 
+  onAddToWantToRead, 
+  onAddToAlreadyRead,
+  isInWantToRead = false,
+  isInAlreadyRead = false 
+}) => {
   const renderStars = (rating?: number) => {
     if (!rating) return null;
     
@@ -90,7 +100,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
             </div>
           )}
           
-          <div className="flex items-center justify-between text-xs text-gray-500">
+          <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
             {book.publishedDate && (
               <span>Published: {book.publishedDate.substring(0, 4)}</span>
             )}
@@ -98,6 +108,39 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
               <span>{book.pageCount} pages</span>
             )}
           </div>
+
+          {/* Action Buttons */}
+          {(onAddToWantToRead || onAddToAlreadyRead) && (
+            <div className="space-y-2">
+              {onAddToWantToRead && (
+                <button
+                  onClick={onAddToWantToRead}
+                  disabled={isInWantToRead || isInAlreadyRead}
+                  className={`w-full py-2 px-4 rounded-md font-medium transition-colors text-sm ${
+                    isInWantToRead || isInAlreadyRead
+                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                      : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                  }`}
+                >
+                  {isInWantToRead ? '✓ In Want to Read' : isInAlreadyRead ? '✓ Already Read' : '+ Want to Read'}
+                </button>
+              )}
+              
+              {onAddToAlreadyRead && (
+                <button
+                  onClick={onAddToAlreadyRead}
+                  disabled={isInWantToRead || isInAlreadyRead}
+                  className={`w-full py-2 px-4 rounded-md font-medium transition-colors text-sm ${
+                    isInWantToRead || isInAlreadyRead
+                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                      : 'bg-green-600 text-white hover:bg-green-700'
+                  }`}
+                >
+                  {isInAlreadyRead ? '✓ In Already Read' : isInWantToRead ? '✓ In Want to Read' : '✓ Mark as Read'}
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

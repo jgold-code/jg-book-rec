@@ -2,12 +2,29 @@ import { useState } from 'react';
 import PreferenceForm from './components/PreferenceForm';
 import BookRecommendations from './components/BookRecommendations';
 import LoadingSpinner from './components/LoadingSpinner';
+import ReadingList from './components/ReadingList';
 import { getBookRecommendations, BookRecommendation } from './services/openai';
+import { useReadingList } from './hooks/useReadingList';
 
 function App() {
   const [books, setBooks] = useState<BookRecommendation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  const {
+    wantToRead,
+    alreadyRead,
+    addToWantToRead,
+    addToAlreadyRead,
+    removeFromWantToRead,
+    removeFromAlreadyRead,
+    moveToAlreadyRead,
+    moveToWantToRead,
+    isInWantToRead,
+    isInAlreadyRead,
+    clearWantToRead,
+    clearAlreadyRead,
+  } = useReadingList();
 
   const handleGetRecommendations = async (preferences: string) => {
     setIsLoading(true);
@@ -70,13 +87,33 @@ function App() {
         {isLoading && <LoadingSpinner />}
 
         {/* Book Recommendations */}
-        {!isLoading && books.length > 0 && <BookRecommendations books={books} />}
+        {!isLoading && books.length > 0 && (
+          <BookRecommendations 
+            books={books}
+            onAddToWantToRead={addToWantToRead}
+            onAddToAlreadyRead={addToAlreadyRead}
+            isInWantToRead={isInWantToRead}
+            isInAlreadyRead={isInAlreadyRead}
+          />
+        )}
 
         {/* Footer */}
         <footer className="text-center mt-16 text-gray-500 text-sm">
           <p>Powered by OpenAI GPT-4o</p>
         </footer>
       </div>
+
+      {/* Floating Reading List */}
+      <ReadingList
+        wantToRead={wantToRead}
+        alreadyRead={alreadyRead}
+        onRemoveWant={removeFromWantToRead}
+        onRemoveRead={removeFromAlreadyRead}
+        onMoveToRead={moveToAlreadyRead}
+        onMoveToWant={moveToWantToRead}
+        onClearWant={clearWantToRead}
+        onClearRead={clearAlreadyRead}
+      />
     </div>
   );
 }
