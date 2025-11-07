@@ -9,7 +9,9 @@ import { useReadingList } from './hooks/useReadingList';
 function App() {
   const [books, setBooks] = useState<BookRecommendation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [lastPreferences, setLastPreferences] = useState<string>('');
   
   const {
     wantToRead,
@@ -30,6 +32,7 @@ function App() {
     setIsLoading(true);
     setError(null);
     setBooks([]);
+    setLastPreferences(preferences);
 
     try {
       // Get recommendations from OpenAI with full book details
@@ -55,6 +58,57 @@ function App() {
       }
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleGetMoreBooks = async () => {
+    if (!lastPreferences) return;
+    
+    setIsLoadingMore(true);
+    setError(null);
+
+    try {
+      const recommendations = await getBookRecommendations(lastPreferences);
+      
+      if (recommendations.length === 0) {
+        setError('No more recommendations found.');
+        return;
+      }
+
+      // Append new books to existing ones
+      setBooks(prev => [...prev, ...recommendations]);
+    } catch (err) {
+      console.error('Error getting more recommendations:', err);
+      
+      if (err instanceof Error) {
+        setError(err.message || 'An error occurred while getting more recommendations.');
+      } else {
+        setError('An unexpected error occurred.');
+      }
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
+  const handleMarkAsRead = async (book: BookRecommendation) => {
+    // Add to already read list
+    addToAlreadyRead(book);
+    
+    // Remove from display
+    setBooks(prev => prev.filter(b => b.id !== book.id));
+    
+    // Fetch a replacement book
+    if (lastPreferences) {
+      try {
+        const recommendations = await getBookRecommendations(lastPreferences);
+        if (recommendations.length > 0) {
+          // Add just the first new book as a replacement
+          setBooks(prev => [...prev, recommendations[0]]);
+        }
+      } catch (err) {
+        console.error('Error fetching replacement book:', err);
+        // Silent fail - don't show error for replacement
+      }
     }
   };
 
@@ -88,13 +142,47 @@ function App() {
 
         {/* Book Recommendations */}
         {!isLoading && books.length > 0 && (
-          <BookRecommendations 
-            books={books}
-            onAddToWantToRead={addToWantToRead}
-            onAddToAlreadyRead={addToAlreadyRead}
-            isInWantToRead={isInWantToRead}
-            isInAlreadyRead={isInAlreadyRead}
-          />
+          <>
+            <div className="max-w-7xl mx-auto mt-8 mb-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <h2 className="text-3xl font-bold text-gray-900">
+                  Your Recommendations
+                </h2>
+                <span className="bg-indigo-100 text-indigo-800 text-sm font-semibold px-3 py-1 rounded-full">
+                  {books.length} books
+                </span>
+              </div>
+              <button
+                onClick={handleGetMoreBooks}
+                disabled={isLoadingMore}
+                className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoadingMore ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Loading...</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    <span>Get 10 More Books</span>
+                  </>
+                )}
+              </button>
+            </div>
+            <BookRecommendations 
+              books={books}
+              onAddToWantToRead={addToWantToRead}
+              onAddToAlreadyRead={handleMarkAsRead}
+              isInWantToRead={isInWantToRead}
+              isInAlreadyRead={isInAlreadyRead}
+            />
+          </>
         )}
 
         {/* Footer */}
